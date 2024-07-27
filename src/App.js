@@ -12,6 +12,12 @@ function TipCalculator() {
   const [bill, setBill] = useState("");
   const [percentage1, setPercentage1] = useState(0);
   const [percentage2, setPercentage2] = useState(0);
+  const tip = bill * ((percentage1 + percentage2) / 2 / 100);
+  function handleReset() {
+    setBill("");
+    setPercentage1(0);
+    setPercentage2(0);
+  }
   return (
     <div>
       <BillInput bill={bill} setBill={setBill}></BillInput>
@@ -27,8 +33,12 @@ function TipCalculator() {
       >
         How did your friend like the service?
       </SelectedPercentage>
-      <Output bill={bill} />
-      <Reset />
+      {bill > 0 && (
+        <>
+          <Output bill={bill} tip={tip} />
+          <Reset handleReset={handleReset} />
+        </>
+      )}
     </div>
   );
 }
@@ -49,7 +59,10 @@ function SelectedPercentage({ percentage, setPercentage, children }) {
   return (
     <div>
       <label>{children}</label>
-      <select value={percentage} onChange={(e) => Number(e.target.value)}>
+      <select
+        value={percentage}
+        onChange={(e) => setPercentage(Number(e.target.value))}
+      >
         <option value={"0"}>Dissatisfied (0%)</option>
         <option value={"5"}>It was OK (5%)</option>
         <option value={"10"}>It was GOOD (10%)</option>
@@ -58,9 +71,13 @@ function SelectedPercentage({ percentage, setPercentage, children }) {
     </div>
   );
 }
-function Output({ bill }) {
-  return <h3>You pay X ({bill} + $B tip)</h3>;
+function Output({ bill, tip }) {
+  return (
+    <h3>
+      You pay ${bill} + ${tip} tip
+    </h3>
+  );
 }
-function Reset() {
-  return <button>Reset</button>;
+function Reset({ handleReset }) {
+  return <button onClick={handleReset}>Reset</button>;
 }
